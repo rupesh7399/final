@@ -1,0 +1,312 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% load static %}
+<script>
+  function check_login(element) {
+	$("#uname_response").hide();
+	
+	uname = $(element).val();
+	if (uname == "") {
+		return;
+	}
+	$.ajax({
+		url : $(element).attr("data-url"),
+		data : {
+			"csrfmiddlewaretoken" : $(element).siblings("input[name='csrfmiddlewaretoken']" ).val(),
+			"uname":uname
+		},
+		method: "POST",
+		dataType : "json",
+		success : function (data) {
+			//console.log(data);
+			if (data.is_success) {
+                document.getElementById('submit').disabled=false;
+                 $("#uname_response").html("Username available.");
+                $("#uname_response").css('color','green');
+                $("#uname_response").show();
+                $("submit").attr("disabled",true);
+                return true;
+			} else {
+                document.getElementById('submit').disabled=true;
+                 $("#uname_response").html("Username already taken.");
+                $("#uname_response").css('color','red');
+				$("#uname_response").show();
+                $("submit").attr("disabled",true);
+                return false;
+			}
+		}
+	});
+}
+
+function check_email(element) {
+	$("#email_error_message").hide();
+	
+	email = $(element).val();
+	if (email == "") {
+		return;
+	}
+	$.ajax({
+		url : $(element).attr("data-url"),
+		data : {
+			"csrfmiddlewaretoken" : $(element).siblings("input[name='csrfmiddlewaretoken']" ).val(),
+			"email":email
+		},
+		method: "POST",
+		dataType : "json",
+		success : function (data) {
+			//console.log(data);
+			if (data.is_success) {
+                document.getElementById('submit').disabled=false;
+                 $("#email_error_message").html("");
+                $("#email_error_message").css('color','green');
+                $("#email_error_message").show();
+                $("submit").attr("disabled",true);
+                return true;
+			} else {
+                document.getElementById('submit').disabled=true;
+                 $("#email_error_message").html("This Email Id is allready Registered");
+                $("#email_error_message").css('color','red');
+				$("#email_error_message").show();
+                $("submit").attr("disabled",false);
+                return false;
+			}
+		}
+	});
+}
+
+</script>
+
+<div class = "container py-5">
+    <form action="signup" id = "reg" method = "post" onsubmit="return validateForm()">
+    {% csrf_token %}
+        <div class="pt-5">
+            <h1>Register</h1>
+        </div>
+        <div class = "row">
+            <div class="form-group col-sm-6">
+  
+                <label for="exampleFormControlInput1">First Name:</label>
+                <input type="text" class="form-control" id="fname" name="first_name" placeholder="First Name" pattern='[A-Za-z\\s]*' >
+               <span class="error_form text-denger" id="fname_error"></span>
+            </div>
+            <div class="form-group col-sm-6">
+  
+               <label for="exampleFormControlInput1">Last Name:</label>
+               <input type="text" class="form-control" id="lname" name = "last_name" placeholder="Last Name" >
+                <span class="error_form text-denger" id="lname_error"></span>
+            </div>
+            
+                
+            
+            
+            <div class="form-group col-sm-6">
+  
+                <label for="exampleFormControlInput1">User Name:</label>
+                <input type="text" class="form-control" id="uname" name="username" placeholder="User Name" onkeyup="check_login(this);return false;" data-url="{% url "check_login" %}"/ >
+                {% csrf_token %}
+                <div id="uname_response" class="response"></div>
+                <span class="error_form text-denger" id="username_error_message"></span>
+                
+            </div>
+            <div class="form-group col-sm-6">
+  
+                <label for="exampleFormControlInput1">Email Id:</label>
+                <input type="email" required class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" name="email" placeholder="Email Id" onkeyup="check_email(this);return false;" data-url="{% url "check_email" %}" />
+                {% csrf_token %}
+                <span class="error_form text-denger" id="email_error_message"></span>
+            </div>
+            <div class="form-group col-sm-6">
+  
+                <label for="exampleFormControlInput1">Password:</label>
+                <input type="password" name="password" id="password" class="form-control input-sm" placeholder="Password" >
+                <span class="error_form text-denger" id="password_error_message"></span>
+            </div>
+            <div class="form-group col-sm-6">
+  
+                <label for="exampleFormControlInput1">Confirm Password:</label>
+                <input type="password" name="confirmation" id="confirmation" class="form-control input-sm" placeholder="Password" >
+                <span class="error_form text-denger" id="retype_password_error_message"></span>
+            </div>
+            <div class="g-recaptcha" data-sitekey="6LcwbL4UAAAAAELiBvqBP5-1XfIdmLv_NyzBz7UE"></div><br>
+            <div class="form-group ">
+                
+                <br><button type="submit" name="submit" id = "submit" class="btn btn-primary" >Register</button>
+              {% for message in messages %}
+              <h3 class = "text-success">
+                    {{message}}
+
+              </h3> 
+              {% endfor %} 
+            </div>
+ 
+    </form>
+</div>
+<script src='https://www.google.com/recaptcha/api.js'></script> 
+<script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit"
+  async defer ></script>
+<script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+<script src="http://code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
+<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+ {% comment %} <script src="exponential.js"></script>  {% endcomment %}
+ 
+
+<!--=============================
+velidation script
+=================================-->
+<script type="text/javascript">
+$(document).ready(function(){
+
+  
+
+
+	$('#submit').click(function(){
+        
+
+        $("#username_error_message").hide();
+        $("#password_error_message").hide();
+        $("#retype_password_error_message").hide();
+        $("#email_error_message").hide();
+        $("#fname_error").hide();
+        $("#lname_error").hide();
+
+
+        var error_username = false;
+        var error_password = false;
+        var error_retype_password = false;
+        var error_email = false;
+        var error_fname = false;
+        var error_lname = false;
+
+        
+
+
+            var username_length = $("#fname").val().length;
+            var fname = $('#fname').val();
+            
+            if(fname == "")
+            {
+                $("#fname_error").html("Should be not velid null value");
+                $("#fname_error").css('color','red');
+                return false;
+            }
+            else{
+                $("#fname_error").hide();
+            }
+            if(username_length <= 3 || username_length > 20) {
+                $("#fname_error").html("Should be between 5-20 characters");
+                $("#fname_error").css('color','red');
+                $("#fname_error").show();
+                error_fname = true;
+                return false;
+            } else {
+                $("#fname_error").hide();
+                
+            }
+    
+        
+
+      
+        
+                var username_length = $("#lname").val().length;
+                
+                if(username_length <= 3 || username_length > 20) {
+                    $("#lname_error").html("Should be between 5-20 characters");
+                    $("#lname_error").css('color','red');
+                    $("#lname_error").show();
+                    error_lname = true;
+                    return false;
+                } else {
+                    $("#lname_error").hide();
+
+                }
+        
+         
+
+      
+            var username_length = $("#uname").val().length;
+            
+            if(username_length < 5 || username_length > 20) {
+                $("#username_error_message").html("Should be between 5-20 characters");
+                $("#username_error_message").css('color','red');
+                $("#username_error_message").show();
+                error_username = true;
+                return false;
+            } else {
+                $("#username_error_message").hide();
+            }
+ 
+        /* var email = $('#email').val();
+
+            if(email == ""){
+                 $("#email_error_message").html("email id is mendetary");
+                $("#email_error_message").css('color','red');
+                return false;
+            }
+            else
+            {
+                 $("#email_error_message").hide();
+            }
+*/
+        
+        
+            var password_length = $("#password").val().length;
+            
+            if(password_length < 8) {
+                $("#password_error_message").html("At least 8 characters");
+                $("#password_error_message").css('color','red');
+                $("#password_error_message").show();
+                error_password = true;
+                return false;
+            } else {
+                $("#password_error_message").hide();
+            }
+        
+      
+
+       
+        
+            var password = $("#password").val();
+            var retype_password = $("#confirmation").val();
+            
+            if(password !=  retype_password) {
+                $("#retype_password_error_message").html("Passwords don't match");
+                $("#retype_password_error_message").css('color','red');
+                $("#retype_password_error_message").show();
+                error_retype_password = true;
+                return false;
+            } else {
+                $("#retype_password_error_message").hide();
+            }
+        
+        
+      /*  
+
+            var pattern = new RegExp(/^[+a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/i);
+
+           
+            if(pattern.test($("#email").val())) {
+                $("#email_error_message").hide();
+            } else {
+                $("#email_error_message").html("Invalid email address");
+                $("#email_error_message").css('color','red');
+                $("#email_error_message").show();
+                error_email = true;
+           
+            }
+        
+        
+
+    */
+
+
+   
+    });
+});
+
+
+
+</script>
+ 
+{% endblock  %}
+

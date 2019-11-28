@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="margin-top:100px;">
+{% for message in messages %}
+
+                    <div class="alert alert-success">
+                        <a class="close" href="#" data-dismiss="alert">×</a>
+
+                        {{ message }}
+
+                    </div>
+            {% endfor %}
+{% comment %} 
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true"> {% endcomment %}
+  <div class="col-sm-4 " style="margin-left : 33%;margin-bottom:100px;"  role="document" >
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Login</h5>
+        
+        
+          
+      
+      </div>
+      <div class="modal-body">
+        <form method="post">
+        {% csrf_token %}
+      {{form.as_p}}
+          
+          <div class="g-recaptcha" data-sitekey="6LcwbL4UAAAAAELiBvqBP5-1XfIdmLv_NyzBz7UE"></div>
+          <input type="submit" value="Login" class="btn btn-primary">
+          <br> 
+          
+    </script>
+          
+           <div>
+              {% for message in massages %}
+              <h3> {{message1}} </h3>
+              {% endfor %}
+        </div>
+        </form>
+       
+
+      </div>
+      <div class="modal-footer" style="">
+        <a href="{% url 'password_reset' %}"  class="btn btn-link text-success">-Forgot Password</a> 
+      <a href="signup"> <button type="button" class="btn btn-primary "   >Sign Up</button></a >
+      </div>
+    </div>
+  </div>
+  <script src='https://www.google.com/recaptcha/api.js'></script> 
+  <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit"
+  async defer>
+
+{% endblock  %}
+
